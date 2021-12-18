@@ -1,2 +1,5 @@
 # Literature resources
 resources/
+
+# __pycache__
+__pycache__/
