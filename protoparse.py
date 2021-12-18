@@ -47,3 +47,10 @@ def tcp_head(ip_data):
     data = ip_data[offset:]
     
     return src_port, dest_port, seq, ack, flag_vals, data
+
+# Parse udp packet
+def udp_head(ip_data):
+    src_port, dest_port, size = struct.unpack('! H H 2x H', ip_data[:8])
+    data = ip_data[8:]
+    
+    return src_port, dest_port, data
