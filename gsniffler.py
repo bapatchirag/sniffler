@@ -3,10 +3,10 @@
 # TODO Complete UI
 
 from PyQt5.QtWidgets import QApplication
-from gsniffle.ui import createWindow
+from gsniffle.ui import create_window
 
 app = QApplication([])
-window = createWindow()
+window = create_window()
 window.setWindowTitle("GSniffler")
 window.show()
 

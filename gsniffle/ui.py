@@ -1,19 +1,29 @@
 # Generate UI for gsniffler
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QWidget, QLabel, QGridLayout, QHBoxLayout, QLineEdit, QCheckBox, QPushButton
-from .funcs import apply_filters
+from PyQt5.QtCore import Qt, QRect
+from PyQt5.QtGui import QFont
+from PyQt5.QtWidgets import QWidget, QLabel, QGridLayout, QHBoxLayout, QLineEdit, QCheckBox, QPushButton, QVBoxLayout, QFrame
+from .funcs import apply_filters, start_sniffing, stop_sniffing, do_analysis
 
-def createWindow():
-    # Create window
-    window = QWidget()
+# Generate a horizontal line
+def make_line():
+    line = QFrame()
+    line.setGeometry(QRect(60, 110, 751, 20))
+    line.setFrameShape(QFrame.HLine)
+    line.setFrameShadow(QFrame.Sunken)
     
+    return line
+
+# Generate filter UI
+def filter_layout():
     # Create filter layout
     filters = QGridLayout()
 
     # Filter labels
     filter_label = QLabel("Filters")
-    # filter_label.setAlignment(Qt.AlignCenter)
+    bold = QFont()
+    bold.setBold(True)
+    filter_label.setFont(bold)
 
     # Protocol filters
     protocol_hbox = QHBoxLayout()
@@ -70,8 +80,57 @@ def createWindow():
     filters.addLayout(src_port_hbox, 2, 0)
     filters.addLayout(dest_port_hbox, 2, 1)
     filters.addWidget(apply_filter_button, 3, 0, 1, 2, Qt.AlignCenter)
+    
+    return filters
+
+# Generate actions UI
+def actions_layout():
+    # Create actions layout
+    actions = QHBoxLayout()
+    
+    # Actions label
+    actions_label = QLabel("Actions")
+    bold = QFont()
+    bold.setBold(True)
+    actions_label.setFont(bold)
+    
+    # Start button
+    start_button = QPushButton("Start")
+    start_button.clicked.connect(start_sniffing)
+    
+    # Stop button
+    stop_button = QPushButton("Stop")
+    stop_button.clicked.connect(stop_sniffing)
+    
+    # Analyze button
+    analyze_button = QPushButton("Analyze")
+    analyze_button.clicked.connect(do_analysis)
+    
+    # Add actions to layout
+    actions.addWidget(actions_label, 0, Qt.AlignCenter)
+    actions.addWidget(start_button, 0, Qt.AlignCenter)
+    actions.addWidget(stop_button, 0, Qt.AlignCenter)
+    actions.addWidget(analyze_button, 0, Qt.AlignCenter)
+    
+    return actions
+
+# Generate main UI
+def create_window():
+    # Create window
+    window = QWidget()
+    
+    # Create overall layout
+    complete = QVBoxLayout()
+    
+    # Add filters to complete layout
+    complete.addLayout(filter_layout())
+    complete.addWidget(make_line())
+    
+    # Add actions to complete layout
+    complete.addLayout(actions_layout())
+    complete.addWidget(make_line())
 
     # Add layout to window
-    window.setLayout(filters)
+    window.setLayout(complete)
     
     return window
