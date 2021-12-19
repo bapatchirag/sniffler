@@ -11,9 +11,6 @@ filter_to_protocol = {
     "eth": 0
 }
 
-def filters():
-    return input("Enter filters: ").split(" ")
-
 def display_ipv4_packet(ip_data):
     print('\n\t - IPv4 Packet:')
     print('\t\t - IP Version: {}, Header Length: {}, TTL: {},'.format(ip_data[0], ip_data[1], ip_data[2]))
@@ -35,9 +32,8 @@ def display_udp_packet(udp_data):
     
 
 # receive a packet
-def main():
-    filter_names = filters()
-    protocols = [filter_to_protocol[x] for x in filter_names if x in filter_to_protocol]
+def main(filters):
+    protocols = [filter_to_protocol[x] for x in filters if x in filter_to_protocol]
     
     #create an INET, raw socket
     s = socket.socket(socket.AF_PACKET, socket.SOCK_RAW, socket.ntohs(3))
@@ -46,7 +42,7 @@ def main():
         
         # Ethernet frame
         eth = protoparse.ethernet_head(raw_data)
-        if 0 in protocols:            
+        if 0 in protocols or len(protocols) == 0:            
             print('\nEthernet Frame:')
             print('Destination: {}, Source: {}, Protocol: {}'.format(eth[0], eth[1],eth[2]))
         
@@ -55,15 +51,22 @@ def main():
             ipv4 = protoparse.ipv4_head(eth[3])
             
             # TCP Packet
-            if ipv4[3] == 6 and ipv4[3] in protocols:
+            if ipv4[3] == 6 and (ipv4[3] in protocols or len(protocols) == 0):
                 display_ipv4_packet(ip_data=ipv4)
                 tcp = protoparse.tcp_head(ipv4[6])
                 display_tcp_packet(tcp_data=tcp)
                 
             # UDP Packet
-            elif ipv4[3] == 17 and ipv4[3] in protocols:
+            elif ipv4[3] == 17 and (ipv4[3] in protocols or len(protocols) == 0):
                 display_ipv4_packet(ip_data=ipv4)
                 udp = protoparse.udp_head(ipv4[6])
                 display_udp_packet(udp_data=udp)
-        
-main()
+
+if __name__ == '__main__':
+    import argparse
+    
+    parser = argparse.ArgumentParser(prog='sniffler', description='Packet sniffer in python', allow_abbrev=False)
+    parser.add_argument('-f', '--filter', nargs='*', action='store', dest='filter', help='Filter to apply to the sniffer', required=False)
+    args = vars(parser.parse_args())
+    
+    main(args['filter'])
