@@ -25,10 +25,28 @@ Currently, run as administrator as:
 sudo python3 sniffler.py
 ```
 
-For filtering of packet types, use ```--filter``` option followed by protocol list
+For filtering of packet types, use ```-f``` or ```--filter``` option followed by protocol list
+
+### Example usage
+- All packets
+  ```bash
+  sudo python3 sniffler.py
+  ```
+- Filter only tcp segments
+  ```bash
+  sudo python3 sniffler.py -f tcp
+  ```
+- Filter ethernet frame info and tcp segments
+  ```bash
+  sudo python3 sniffler.py --filter tcp eth
+  ```
+- Help
+  ```bash
+  sudo python3 sniffler.py --help
+  ```
 
 ### Protocols supported
-- [x] TCP segments (IPv4)
-- [x] Ethernet frames
-- [x] UDP segments (IPv4)
-- [ ] ICMP 
+- [x] TCP segments (IPv4) - tcp
+- [x] Ethernet frames - eth
+- [x] UDP segments (IPv4) - udp
+- [ ] ICMP - icmp
