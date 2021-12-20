@@ -2,7 +2,7 @@
 
 from PyQt5.QtCore import Qt, QRect
 from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QWidget, QLabel, QGridLayout, QHBoxLayout, QLineEdit, QCheckBox, QPushButton, QVBoxLayout, QFrame
+from PyQt5.QtWidgets import QWidget, QLabel, QGridLayout, QHBoxLayout, QLineEdit, QCheckBox, QPushButton, QVBoxLayout, QFrame, QTableWidget, QTableWidgetItem
 from .funcs import apply_filters, start_sniffing, stop_sniffing, do_analysis
 
 # Generate a horizontal line
@@ -42,14 +42,14 @@ def filter_layout():
 
     # Source IP filter
     src_ip_hbox = QHBoxLayout()
-    source_ip_label = QLabel("Source IP")
+    source_ip_label = QLabel("Source Addr.")
     source_ip_edit = QLineEdit()
     src_ip_hbox.addWidget(source_ip_label)
     src_ip_hbox.addWidget(source_ip_edit)
 
     # Destination IP filter
     dest_ip_hbox = QHBoxLayout()
-    dest_ip_label = QLabel("Dest. IP")
+    dest_ip_label = QLabel("Dest. Addr.")
     dest_ip_edit = QLineEdit()
     dest_ip_hbox.addWidget(dest_ip_label)
     dest_ip_hbox.addWidget(dest_ip_edit)
@@ -114,6 +114,29 @@ def actions_layout():
     
     return actions
 
+# Generate table UI
+def table_layout():
+    # Create table layout
+    table_ui = QHBoxLayout()
+    
+    # Create table widget
+    packet_table = QTableWidget()
+    
+    # Set columns
+    packet_table.setColumnCount(5)
+    packet_table.setHorizontalHeaderLabels([
+        "Source Address",
+        "Source Port",
+        "Destination Address",
+        "Destination Port",
+        "TL Protocol"
+    ])
+    
+    # Add table to table_ui
+    table_ui.addWidget(packet_table)
+    
+    return table_ui
+
 # Generate main UI
 def create_window():
     # Create window
@@ -128,6 +151,10 @@ def create_window():
     
     # Add actions to complete layout
     complete.addLayout(actions_layout())
+    complete.addWidget(make_line())
+    
+    # Add table to complete layout
+    complete.addLayout(table_layout())
     complete.addWidget(make_line())
 
     # Add layout to window
