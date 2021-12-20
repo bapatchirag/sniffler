@@ -137,6 +137,26 @@ def table_layout():
     
     return table_ui
 
+# Generate status bar UI
+def status_bar_layout():
+    # Create status bar layout
+    status = QHBoxLayout()
+    
+    # Status label
+    status_label = QLabel("Status")
+    bold = QFont()
+    bold.setBold(True)
+    status_label.setFont(bold)
+    
+    # Status text
+    status_text = QLabel("Idle")
+    
+    # Add status to layout
+    status.addWidget(status_label, 0, Qt.AlignCenter)
+    status.addWidget(status_text, 0, Qt.AlignCenter)
+    
+    return status
+
 # Generate main UI
 def create_window():
     # Create window
@@ -155,6 +175,10 @@ def create_window():
     
     # Add table to complete layout
     complete.addLayout(table_layout())
+    complete.addWidget(make_line())
+    
+    # Add status to complete layout
+    complete.addLayout(status_bar_layout())
     complete.addWidget(make_line())
 
     # Add layout to window
