@@ -32,7 +32,7 @@ def display_udp_packet(udp_data):
     
 
 # receive a packet
-def main(filters):
+def sniffle(filters):
     if filters is None:
         protocols = []
     else:
@@ -72,4 +72,4 @@ if __name__ == '__main__':
     parser.add_argument('-f', '--filter', nargs='*', action='store', dest='filter', help='Filter to apply to the sniffer', required=False)
     args = vars(parser.parse_args())
     
-    main(args['filter'])
+    sniffle(args['filter'])

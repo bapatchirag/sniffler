@@ -1,7 +1,5 @@
 # GUI interface for sniffler
 
-# TODO Complete UI
-
 from PyQt5.QtWidgets import QApplication
 from gsniffle.ui import create_window
 
