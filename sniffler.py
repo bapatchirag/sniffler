@@ -33,7 +33,10 @@ def display_udp_packet(udp_data):
 
 # receive a packet
 def main(filters):
-    protocols = [filter_to_protocol[x] for x in filters if x in filter_to_protocol]
+    if filters is None:
+        protocols = []
+    else:
+        protocols = [filter_to_protocol[x] for x in filters if x in filter_to_protocol]
     
     #create an INET, raw socket
     s = socket.socket(socket.AF_PACKET, socket.SOCK_RAW, socket.ntohs(3))
