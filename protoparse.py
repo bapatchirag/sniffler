@@ -20,7 +20,7 @@ def ethernet_head(raw_data):
     proto = socket.htons(prototype)
     data = raw_data[14:]
     
-    return dest_mac, src_mac, proto, data
+    return dest_mac, src_mac, proto, data, len(raw_data)
 
 # Parse ipv4 packet
 def ipv4_head(eth_data):
@@ -30,23 +30,23 @@ def ipv4_head(eth_data):
     ttl, proto, src, target = struct.unpack('! 8x B B 2x 4s 4s', eth_data[:20])
     tl_data = eth_data[header_len:]
     
-    return ip_version, header_len, ttl, proto, get_ip_addr(src), get_ip_addr(target), tl_data
+    return header_len, proto, get_ip_addr(src), get_ip_addr(target), tl_data
 
 # Parse tcp packet
 def tcp_head(ip_data):
     src_port, dest_port, seq, ack, offset_res, flags = struct.unpack('! H H L L B B', ip_data[:14])
     offset = (offset_res >> 4) * 4
     flag_vals = {
-        "flag_URG": (flags & 32) >> 5,
-        "flag_ACK": (flags & 16) >> 4,
-        "flag_PSH": (flags & 8) >> 3,
-        "flag_RST": (flags & 4) >> 2,
-        "flag_SYN": (flags & 2) >> 1,
-        "flag_FIN": flags & 1
+        "URG": (flags & 32) >> 5,
+        "ACK": (flags & 16) >> 4,
+        "PSH": (flags & 8) >> 3,
+        "RST": (flags & 4) >> 2,
+        "SYN": (flags & 2) >> 1,
+        "FIN": flags & 1
     }
     data = ip_data[offset:]
     
-    return src_port, dest_port, seq, ack, flag_vals, data
+    return src_port, dest_port, flag_vals, data
 
 # Parse udp packet
 def udp_head(ip_data):
