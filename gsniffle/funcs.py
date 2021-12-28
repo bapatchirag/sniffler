@@ -1,6 +1,7 @@
 # Add functionalities
 
 from PyQt5.QtWidgets import QMessageBox, QTableWidget, QTableWidgetItem, QHBoxLayout
+from PyQt5.QtCore import Qt
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -46,7 +47,9 @@ class PacketTable:
         
         cur_col = 0
         for item in table_item:
-            self.packet_table.setItem(row_count, cur_col, QTableWidgetItem(str(item)))
+            qt_item = QTableWidgetItem(str(item))
+            qt_item.setFlags(qt_item.flags() ^ Qt.ItemIsEditable)
+            self.packet_table.setItem(row_count, cur_col, qt_item)
             cur_col += 1
             
     def table_layout(self):
@@ -61,8 +64,8 @@ class Gsniff(threading.Thread):
         self.event_sniff = threading.Event()
         self.thread_sniff = threading.Thread(target=sniffle, args=(None, "gsniffler"))
         self.thread_control = threading.Thread(target=self.add_packets)
-        self.thread_sniff.setDaemon(True)
-        self.thread_control.setDaemon(True)
+        self.thread_sniff.daemon = True
+        self.thread_control.daemon = True
 
     def add_packets(self):
         while self.event_sniff.is_set():
