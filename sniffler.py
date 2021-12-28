@@ -54,6 +54,9 @@ class PacketList:
                 
         return unused_count
     
+    def getUnused(self):
+        return [packet for packet in self.packet_list if not packet.isUsed()]
+    
     def delUsed(self):
         for packet in self.packet_list:
             if packet.isUsed():
@@ -79,9 +82,9 @@ def sniffle(filters, callfile):
         eth = protoparse.ethernet_head(raw_data)
         eth_frame = Packet(proto="eth", packsize=eth[4], sa=eth[1], da=eth[0])
         if eth_frame.proto in filters or len(filters) == 0:
-            if callfile == "gsniffler":
+            if callfile == "sniffler":
                 eth_frame.display(tab=0)
-            elif callfile == "sniffler":
+            elif callfile == "gsniffler":
                 packet_buffer.addPacket(eth_frame)
         
         # IP Packet
@@ -92,18 +95,18 @@ def sniffle(filters, callfile):
             if protocol_to_filter[ipv4[1]] == "tcp" and ("tcp" in filters or len(filters) == 0):
                 tcp = protoparse.tcp_head(ipv4[4])
                 tcp_segment = Packet(proto="tcp", packsize=len(tcp[3]), sa=ipv4[2], da=ipv4[3], sp=tcp[0], dp=tcp[1], data=tcp[3], flags=tcp[2])
-                if callfile == "gsniffler":
+                if callfile == "sniffler":
                     tcp_segment.display(tab=1)
-                elif callfile == "sniffler":
+                elif callfile == "gsniffler":
                     packet_buffer.addPacket(tcp_segment)
                 
             # UDP Packet
             elif protocol_to_filter[ipv4[1]] == "udp" and ("udp" in filters or len(filters) == 0):
                 udp = protoparse.udp_head(ipv4[4])
                 udp_segment = Packet(proto="udp", packsize=len(udp[2]), sa=ipv4[2], da=ipv4[3], sp=udp[0], dp=udp[1], data=udp[2])
-                if callfile == "gsniffler":
+                if callfile == "sniffler":
                     udp_segment.display(tab=1)
-                elif callfile == "sniffler":
+                elif callfile == "gsniffler":
                     packet_buffer.addPacket(udp_segment)
 
 if __name__ == '__main__':

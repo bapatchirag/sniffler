@@ -1,10 +1,10 @@
 # GUI interface for sniffler
 
 from PyQt5.QtWidgets import QApplication
-from gsniffle.ui import create_window
+from gsniffle.ui import MainFrame
 
 app = QApplication([])
-window = create_window()
+window = MainFrame().create_window()
 window.setWindowTitle("GSniffler")
 window.show()
 
