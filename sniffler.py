@@ -45,11 +45,25 @@ class Packet:
 class PacketList:
     def __init__(self):
         self.packet_list = []
+        
+    def countUnused(self):
+        unused_count = 0
+        for packet in self.packet_list:
+            if not packet.isUsed():
+                unused_count += 1
+                
+        return unused_count
     
     def delUsed(self):
         for packet in self.packet_list:
             if packet.isUsed():
                 self.packet_list.remove(packet)
+    
+    def addPacket(self, packet):
+        self.packet_list.append(packet)
+        
+# Create packet buffer
+packet_buffer = PacketList()
 
 # receive a packet
 def sniffle(filters, callfile):
@@ -65,7 +79,10 @@ def sniffle(filters, callfile):
         eth = protoparse.ethernet_head(raw_data)
         eth_frame = Packet(proto="eth", packsize=eth[4], sa=eth[1], da=eth[0])
         if eth_frame.proto in filters or len(filters) == 0:
-            eth_frame.display(tab=0)
+            if callfile == "gsniffler":
+                eth_frame.display(tab=0)
+            elif callfile == "sniffler":
+                packet_buffer.addPacket(eth_frame)
         
         # IP Packet
         if eth[2] == 8:
@@ -75,13 +92,19 @@ def sniffle(filters, callfile):
             if protocol_to_filter[ipv4[1]] == "tcp" and ("tcp" in filters or len(filters) == 0):
                 tcp = protoparse.tcp_head(ipv4[4])
                 tcp_segment = Packet(proto="tcp", packsize=len(tcp[3]), sa=ipv4[2], da=ipv4[3], sp=tcp[0], dp=tcp[1], data=tcp[3], flags=tcp[2])
-                tcp_segment.display(tab=1)
+                if callfile == "gsniffler":
+                    tcp_segment.display(tab=1)
+                elif callfile == "sniffler":
+                    packet_buffer.addPacket(tcp_segment)
                 
             # UDP Packet
             elif protocol_to_filter[ipv4[1]] == "udp" and ("udp" in filters or len(filters) == 0):
                 udp = protoparse.udp_head(ipv4[4])
                 udp_segment = Packet(proto="udp", packsize=len(udp[2]), sa=ipv4[2], da=ipv4[3], sp=udp[0], dp=udp[1], data=udp[2])
-                udp_segment.display(tab=1)
+                if callfile == "gsniffler":
+                    udp_segment.display(tab=1)
+                elif callfile == "sniffler":
+                    packet_buffer.addPacket(udp_segment)
 
 if __name__ == '__main__':
     import argparse
