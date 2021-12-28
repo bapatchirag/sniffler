@@ -61,6 +61,8 @@ class Gsniff(threading.Thread):
         self.event_sniff = threading.Event()
         self.thread_sniff = threading.Thread(target=sniffle, args=(None, "gsniffler"))
         self.thread_control = threading.Thread(target=self.add_packets)
+        self.thread_sniff.setDaemon(True)
+        self.thread_control.setDaemon(True)
 
     def add_packets(self):
         while self.event_sniff.is_set():
@@ -74,14 +76,12 @@ class Gsniff(threading.Thread):
         self.event_sniff.set()
         self.thread_sniff.start()
         self.thread_control.start()
-        # alert_box()
 
     # Callback to stop sniffing packets
     def stop_sniffing(self):
         if self.event_sniff.is_set():
             self.event_sniff.clear()
-        # alert_box()
 
     # Callback to open analysis window
-    def do_analysis():
+    def do_analysis(self):
         alert_box()
