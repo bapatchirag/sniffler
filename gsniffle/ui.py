@@ -3,7 +3,7 @@
 from PyQt5.QtCore import Qt, QRect
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QWidget, QLabel, QGridLayout, QHBoxLayout, QLineEdit, QCheckBox, QPushButton, QVBoxLayout, QFrame, QTableWidget, QTableWidgetItem
-from .funcs import apply_filters, start_sniffing, stop_sniffing, do_analysis
+from .funcs import Gsniff as gs, apply_filters
 
 # Generate a horizontal line
 def make_line():
@@ -96,15 +96,15 @@ def actions_layout():
     
     # Start button
     start_button = QPushButton("Start")
-    start_button.clicked.connect(start_sniffing)
+    start_button.clicked.connect(gs.start_sniffing)
     
     # Stop button
     stop_button = QPushButton("Stop")
-    stop_button.clicked.connect(stop_sniffing)
+    stop_button.clicked.connect(gs.stop_sniffing)
     
     # Analyze button
     analyze_button = QPushButton("Analyze")
-    analyze_button.clicked.connect(do_analysis)
+    analyze_button.clicked.connect(gs.do_analysis)
     
     # Add actions to layout
     actions.addWidget(actions_label, 0, Qt.AlignCenter)
@@ -129,7 +129,7 @@ def table_layout():
         "Source Port",
         "Destination Address",
         "Destination Port",
-        "TL Protocol"
+        "Protocol"
     ])
     
     # Add table to table_ui
