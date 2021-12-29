@@ -24,7 +24,8 @@ def apply_filters():
 # Create table item from Packet in packet_buffer
 def create_table_item(packet):
     return [packet.sa, packet.da, packet.sp, packet.dp, packet.proto]
-    
+
+# Table behaviour    
 class PacketTable:
     def __init__(self):
         self.packet_table = QTableWidget()
@@ -53,13 +54,15 @@ class PacketTable:
             qt_item.setFlags(qt_item.flags() ^ Qt.ItemIsEditable)
             self.packet_table.setItem(row_count, cur_col, qt_item)
             cur_col += 1
-            
+    
+    # Create layout for table       
     def table_layout(self):
         table_ui = QHBoxLayout()
         table_ui.addWidget(self.packet_table)
         
         return table_ui
 
+# Sniffing behaviour
 class Gsniff(threading.Thread):
     def __init__(self, table):
         self.packet_table = table
@@ -71,7 +74,8 @@ class Gsniff(threading.Thread):
         self.thread_sniff.daemon = True
         self.thread_control.daemon = True
         self.thread_analysis.daemon = True
-
+    
+    # Add packets to table
     def add_packets(self):
         while self.event_sniff.is_set():
             for packet in packet_buffer.packet_list:
@@ -92,7 +96,8 @@ class Gsniff(threading.Thread):
             self.event_sniff.clear()
             self.thread_control.join()
             self.event_analysis.set()
-            
+
+    # Callback to start analysis
     def start_analysis(self):
         if self.event_analysis.is_set():
             self.event_analysis.clear()
@@ -104,4 +109,3 @@ class Gsniff(threading.Thread):
         for protocol in self.packet_table.packet_info:
             text += protocol.upper() + " count: " + str(self.packet_table.packet_info[protocol]) + "\n"
         analysis_box(title="Analysis", text=text)
-        
