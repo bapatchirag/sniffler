@@ -3,12 +3,13 @@
 from PyQt5.QtCore import Qt, QRect
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QWidget, QLabel, QGridLayout, QHBoxLayout, QLineEdit, QCheckBox, QPushButton, QVBoxLayout, QFrame, QTableWidget, QTableWidgetItem
-from .funcs import Gsniff, PacketTable, apply_filters
+from .funcs import Gsniff, PacketTable, FilterList, apply_filters
 
 class MainFrame():
     def __init__(self):
         self.pt = PacketTable()
-        self.actions = Gsniff(self.pt)
+        self.filters = FilterList()
+        self.actions = Gsniff(self.pt, self.filters)
         self.window = QWidget()
         self.complete = QVBoxLayout()
     
@@ -34,50 +35,37 @@ class MainFrame():
 
         # Protocol filters
         protocol_hbox = QHBoxLayout()
-        tcp_cbox = QCheckBox("TCP")
-        udp_cbox = QCheckBox("UDP")
-        icmp_cbox = QCheckBox("ICMP")
-        eth_cbox = QCheckBox("Ethernet")
-        tcp_cbox.setChecked(True)
-        udp_cbox.setChecked(True)
-        icmp_cbox.setChecked(True)
-        eth_cbox.setChecked(True)
-        protocol_hbox.addWidget(tcp_cbox)
-        protocol_hbox.addWidget(udp_cbox)
-        protocol_hbox.addWidget(icmp_cbox)
-        protocol_hbox.addWidget(eth_cbox)
+        for cbox in self.filters.proto.values():
+            cbox.setChecked(True)
+            protocol_hbox.addWidget(cbox)
 
         # Source IP filter
         src_ip_hbox = QHBoxLayout()
         source_ip_label = QLabel("Source Addr.")
-        source_ip_edit = QLineEdit()
         src_ip_hbox.addWidget(source_ip_label)
-        src_ip_hbox.addWidget(source_ip_edit)
+        src_ip_hbox.addWidget(self.filters.addr_port["sa"])
 
         # Destination IP filter
         dest_ip_hbox = QHBoxLayout()
         dest_ip_label = QLabel("Dest. Addr.")
-        dest_ip_edit = QLineEdit()
         dest_ip_hbox.addWidget(dest_ip_label)
-        dest_ip_hbox.addWidget(dest_ip_edit)
+        dest_ip_hbox.addWidget(self.filters.addr_port["da"])
 
         # Source port filter
         src_port_hbox = QHBoxLayout()
         source_port_label = QLabel("Source Port")
-        source_port_edit = QLineEdit()
         src_port_hbox.addWidget(source_port_label)
-        src_port_hbox.addWidget(source_port_edit)
+        src_port_hbox.addWidget(self.filters.addr_port["sp"])
 
         # Destination port filter
         dest_port_hbox = QHBoxLayout()
         dest_port_label = QLabel("Dest. Port")
-        dest_port_edit = QLineEdit()
         dest_port_hbox.addWidget(dest_port_label)
-        dest_port_hbox.addWidget(dest_port_edit)
+        dest_port_hbox.addWidget(self.filters.addr_port["dp"])
         
         # Apply filter button
         apply_filter_button = QPushButton("Apply")
-        apply_filter_button.clicked.connect(apply_filters)
+        apply_filter_button.clicked.connect(lambda: apply_filters(self.filters))
 
         # Add filters to layout
         filters.addWidget(filter_label, 0, 0, 1, 1, Qt.AlignCenter)

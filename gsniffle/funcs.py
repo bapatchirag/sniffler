@@ -1,6 +1,6 @@
 # Add functionalities
 
-from PyQt5.QtWidgets import QMessageBox, QTableWidget, QTableWidgetItem, QHBoxLayout
+from PyQt5.QtWidgets import QMessageBox, QTableWidget, QTableWidgetItem, QHBoxLayout, QCheckBox, QLineEdit
 from PyQt5.QtCore import Qt
 import sys
 import os
@@ -18,12 +18,12 @@ def analysis_box(title="Test", text="Button works!"):
     msg.exec_()
     
 # Callback to apply filters
-def apply_filters():
-    alert_box()
+def apply_filters(filters):
+    filters.set_selected()
     
 # Create table item from Packet in packet_buffer
 def create_table_item(packet):
-    return [packet.sa, packet.da, packet.sp, packet.dp, packet.proto]
+    return [packet.sa, packet.sp, packet.da, packet.dp, packet.proto]
 
 # Table behaviour    
 class PacketTable:
@@ -61,14 +61,41 @@ class PacketTable:
         table_ui.addWidget(self.packet_table)
         
         return table_ui
+    
+class FilterList:
+    def __init__(self):
+        self.proto = {
+            "tcp": QCheckBox("TCP"),
+            "udp": QCheckBox("UDP"),
+            "eth": QCheckBox("Ethernet"),
+            "icmp": QCheckBox("ICMP")
+        }
+        self.addr_port = {
+            "sa": QLineEdit(),
+            "da": QLineEdit(),
+            "sp": QLineEdit(),
+            "dp": QLineEdit()
+        }
+        self.selected_filters = {"proto": [], "sa": [], "da": [], "sp": [], "dp": []}
+    
+    def set_selected(self):     
+        self.selected_filters["proto"] = [protocol for protocol in self.proto if self.proto[protocol].isChecked()]
+        self.selected_filters["sa"] = [self.addr_port["sa"].text()] if self.addr_port["sa"].text() != "" else []
+        self.selected_filters["da"] = [self.addr_port["da"].text()] if self.addr_port["da"].text() != "" else []
+        self.selected_filters["sp"] = [self.addr_port["sp"].text()] if self.addr_port["sp"].text() != "" else []
+        self.selected_filters["dp"] = [self.addr_port["dp"].text()] if self.addr_port["dp"].text() != "" else []
+        
+    def get_selected(self):
+        return self.selected_filters
 
 # Sniffing behaviour
 class Gsniff(threading.Thread):
-    def __init__(self, table):
+    def __init__(self, table, filter_list):
         self.packet_table = table
+        self.filters = filter_list.get_selected()
         self.event_sniff = threading.Event()
         self.event_analysis = threading.Event()
-        self.thread_sniff = threading.Thread(target=sniffle, args=(None, "gsniffler"))
+        self.thread_sniff = threading.Thread(target=sniffle, args=(self.filters, "gsniffler"))
         self.thread_control = threading.Thread(target=self.add_packets)
         self.thread_analysis = threading.Thread(target=self.do_analysis)
         self.thread_sniff.daemon = True
