@@ -3,7 +3,7 @@
 from PyQt5.QtCore import Qt, QRect
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QWidget, QLabel, QGridLayout, QHBoxLayout, QLineEdit, QCheckBox, QPushButton, QVBoxLayout, QFrame, QTableWidget, QTableWidgetItem
-from .funcs import Gsniff, PacketTable, FilterList, apply_filters
+from .funcs import Gsniff, PacketTable, FilterList
 
 class MainFrame():
     def __init__(self):
@@ -65,7 +65,7 @@ class MainFrame():
         
         # Apply filter button
         apply_filter_button = QPushButton("Apply")
-        apply_filter_button.clicked.connect(lambda: apply_filters(self.filters))
+        apply_filter_button.clicked.connect(lambda: self.filters.set_selected())
 
         # Add filters to layout
         filters.addWidget(filter_label, 0, 0, 1, 1, Qt.AlignCenter)

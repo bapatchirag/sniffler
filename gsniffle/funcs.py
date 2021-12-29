@@ -17,10 +17,6 @@ def analysis_box(title="Test", text="Button works!"):
     msg.setStandardButtons(QMessageBox.Ok)
     msg.exec_()
     
-# Callback to apply filters
-def apply_filters(filters):
-    filters.set_selected()
-    
 # Create table item from Packet in packet_buffer
 def create_table_item(packet):
     return [packet.sa, packet.sp, packet.da, packet.dp, packet.proto]
@@ -61,7 +57,8 @@ class PacketTable:
         table_ui.addWidget(self.packet_table)
         
         return table_ui
-    
+
+# Filter behaviour
 class FilterList:
     def __init__(self):
         self.proto = {
