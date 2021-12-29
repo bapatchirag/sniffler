@@ -89,10 +89,10 @@ class FilterList:
 class Gsniff(threading.Thread):
     def __init__(self, table, filter_list):
         self.packet_table = table
-        self.filters = filter_list.get_selected()
+        self.filters = filter_list
         self.event_sniff = threading.Event()
         self.event_analysis = threading.Event()
-        self.thread_sniff = threading.Thread(target=sniffle, args=(self.filters, "gsniffler"))
+        self.thread_sniff = threading.Thread(target=sniffle, args=(self.filters.get_selected(), "gsniffler"))
         self.thread_control = threading.Thread(target=self.add_packets)
         self.thread_analysis = threading.Thread(target=self.do_analysis)
         self.thread_sniff.daemon = True
@@ -111,6 +111,7 @@ class Gsniff(threading.Thread):
     def start_sniffing(self):
         self.event_sniff.set()
         if not self.thread_sniff.is_alive():
+            self.filters.set_selected()
             self.thread_sniff.start()
             self.thread_control.start()
 

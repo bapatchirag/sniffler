@@ -62,10 +62,6 @@ class MainFrame():
         dest_port_label = QLabel("Dest. Port")
         dest_port_hbox.addWidget(dest_port_label)
         dest_port_hbox.addWidget(self.filters.addr_port["dp"])
-        
-        # Apply filter button
-        apply_filter_button = QPushButton("Apply")
-        apply_filter_button.clicked.connect(lambda: self.filters.set_selected())
 
         # Add filters to layout
         filters.addWidget(filter_label, 0, 0, 1, 1, Qt.AlignCenter)
@@ -74,7 +70,6 @@ class MainFrame():
         filters.addLayout(dest_ip_hbox, 1, 1)
         filters.addLayout(src_port_hbox, 2, 0)
         filters.addLayout(dest_port_hbox, 2, 1)
-        filters.addWidget(apply_filter_button, 3, 0, 1, 2, Qt.AlignCenter)
         
         return filters
 
