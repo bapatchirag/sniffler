@@ -8,6 +8,7 @@ from .funcs import Gsniff, PacketTable, apply_filters
 class MainFrame():
     def __init__(self):
         self.pt = PacketTable()
+        self.actions = Gsniff(self.pt)
         self.window = QWidget()
         self.complete = QVBoxLayout()
     
@@ -100,20 +101,17 @@ class MainFrame():
         bold.setBold(True)
         actions_label.setFont(bold)
         
-        # Create actions from class
-        actions = Gsniff(self.pt)
-        
         # Start button
         start_button = QPushButton("Start")
-        start_button.clicked.connect(actions.start_sniffing)
+        start_button.clicked.connect(self.actions.start_sniffing)
         
         # Stop button
         stop_button = QPushButton("Stop")
-        stop_button.clicked.connect(actions.stop_sniffing)
+        stop_button.clicked.connect(self.actions.stop_sniffing)
         
         # Analyze button
         analyze_button = QPushButton("Analyze")
-        analyze_button.clicked.connect(actions.do_analysis)
+        analyze_button.clicked.connect(self.actions.start_analysis)
         
         # Add actions to layout
         actions_ui.addWidget(actions_label, 0, Qt.AlignCenter)
