@@ -13,9 +13,9 @@ Simple Python-based packet sniffer, complete with a GUI interface for easy viewi
   - [x] UI
   - [ ] Actions
     - [x] Table population
-    - [ ] Population prerequisite/post-population filtering
-    - [x] Analysis (packet counts, insecure packet counts, maybe more?)
-    - [ ] Error handling
+    - [x] Pre-population filtering
+    - [x] Analysis (packet counts, maybe more?)
+    - [ ] Status handling
 
 ## Requirements
 
@@ -32,8 +32,12 @@ Run CLI application as administrator as:
 ```bash
 sudo python3 sniffler.py
 ```
-
-For filtering of packet types, use ```-f``` or ```--filter``` option followed by protocol list
+#### Options
+- For filtering by protocol, use ```-p``` or ```--proto``` option followed by protocol list
+- For filtering by source address, use ```-sa``` or ```--srcaddr``` option followed by source address
+- For filtering by source address, use ```-da``` or ```--dstaddr``` option followed by destination address
+- For filtering by source address, use ```-sp``` or ```--srcport``` option followed by source port
+- For filtering by source address, use ```-dp``` or ```--dstport``` option followed by destination port
 
 ### GUI
 Run GUI application as administrator as:
@@ -48,11 +52,15 @@ sudo python3 gsniffler.py
   ```
 - Filter only tcp segments
   ```bash
-  sudo python3 sniffler.py -f tcp
+  sudo python3 sniffler.py -p tcp
   ```
 - Filter ethernet frame info and tcp segments
   ```bash
-  sudo python3 sniffler.py --filter tcp eth
+  sudo python3 sniffler.py --proto tcp eth
+  ```
+- Filter TCP segments from port ```443```
+  ```bash
+  sudo python3 sniffler.py -p tcp --srcport 443
   ```
 - Help
   ```bash
