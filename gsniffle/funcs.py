@@ -8,8 +8,8 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from sniffler import sniffle, packet_buffer
 import threading
 
-# Testing alert box
-def alert_box(title="Test", text="Button works!"):
+# Analysis display message box
+def analysis_box(title="Test", text="Button works!"):
     msg = QMessageBox()
     msg.setIcon(QMessageBox.Information)
     msg.setText(text)
@@ -28,6 +28,7 @@ def create_table_item(packet):
 class PacketTable:
     def __init__(self):
         self.packet_table = QTableWidget()
+        self.packet_info = {"tcp": 0, "udp": 0, "icmp": 0, "eth": 0}
         
         # Set columns
         self.packet_table.setColumnCount(5)
@@ -42,6 +43,7 @@ class PacketTable:
     # Add a single packet to the table
     def add_packet_to_table(self, packet):
         table_item = create_table_item(packet)
+        self.packet_info[table_item[4]] += 1
         row_count = self.packet_table.rowCount()
         self.packet_table.setRowCount(row_count + 1)
         
@@ -62,10 +64,13 @@ class Gsniff(threading.Thread):
     def __init__(self, table):
         self.packet_table = table
         self.event_sniff = threading.Event()
+        self.event_analysis = threading.Event()
         self.thread_sniff = threading.Thread(target=sniffle, args=(None, "gsniffler"))
         self.thread_control = threading.Thread(target=self.add_packets)
+        self.thread_analysis = threading.Thread(target=self.do_analysis)
         self.thread_sniff.daemon = True
         self.thread_control.daemon = True
+        self.thread_analysis.daemon = True
 
     def add_packets(self):
         while self.event_sniff.is_set():
@@ -77,14 +82,26 @@ class Gsniff(threading.Thread):
     # Callback to start sniffing packets
     def start_sniffing(self):
         self.event_sniff.set()
-        self.thread_sniff.start()
-        self.thread_control.start()
+        if not self.thread_sniff.is_alive():
+            self.thread_sniff.start()
+            self.thread_control.start()
 
     # Callback to stop sniffing packets
     def stop_sniffing(self):
         if self.event_sniff.is_set():
             self.event_sniff.clear()
+            self.thread_control.join()
+            self.event_analysis.set()
+            
+    def start_analysis(self):
+        if self.event_analysis.is_set():
+            self.event_analysis.clear()
+            self.thread_analysis.start()
 
     # Callback to open analysis window
     def do_analysis(self):
-        alert_box()
+        text = ""
+        for protocol in self.packet_table.packet_info:
+            text += protocol.upper() + " count: " + str(self.packet_table.packet_info[protocol]) + "\n"
+        analysis_box(title="Analysis", text=text)
+        
