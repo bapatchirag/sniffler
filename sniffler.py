@@ -40,6 +40,11 @@ class Packet:
                 print("\t"*(tab+2) + " - {}: {}".format(flag, self.flags[flag]))
         if self.data is not None:
             print("\t"*(tab+1) + " - Data: {}".format(self.data))
+            
+    def is_in_filter(self, filters):
+        if not any(filters.values()):
+            return True
+        return all([(str(getattr(self, filter)) in filters[filter]) for filter in filters if len(filters[filter]) != 0])
 
 # Packet List behaviour
 class PacketList:
@@ -70,9 +75,6 @@ packet_buffer = PacketList()
 
 # receive a packet
 def sniffle(filters, callfile):
-    if filters is None:
-        filters = []
-
     #create an INET, raw socket
     s = socket.socket(socket.AF_PACKET, socket.SOCK_RAW, socket.ntohs(3))
     while True:
@@ -81,7 +83,7 @@ def sniffle(filters, callfile):
         # Ethernet frame
         eth = protoparse.ethernet_head(raw_data)
         eth_frame = Packet(proto="eth", packsize=eth[4], sa=eth[1], da=eth[0])
-        if eth_frame.proto in filters or len(filters) == 0:
+        if eth_frame.is_in_filter(filters=filters):
             if callfile == "sniffler":
                 eth_frame.display(tab=0)
             elif callfile == "gsniffler":
@@ -92,28 +94,42 @@ def sniffle(filters, callfile):
             ipv4 = protoparse.ipv4_head(eth[3])
             
             # TCP Packet
-            if protocol_to_filter[ipv4[1]] == "tcp" and ("tcp" in filters or len(filters) == 0):
+            if protocol_to_filter[ipv4[1]] == "tcp":
                 tcp = protoparse.tcp_head(ipv4[4])
                 tcp_segment = Packet(proto="tcp", packsize=len(tcp[3]), sa=ipv4[2], da=ipv4[3], sp=tcp[0], dp=tcp[1], data=tcp[3], flags=tcp[2])
-                if callfile == "sniffler":
-                    tcp_segment.display(tab=1)
-                elif callfile == "gsniffler":
-                    packet_buffer.addPacket(tcp_segment)
+                if tcp_segment.is_in_filter(filters=filters):
+                    if callfile == "sniffler":
+                        tcp_segment.display(tab=1)
+                    elif callfile == "gsniffler":
+                        packet_buffer.addPacket(tcp_segment)
                 
             # UDP Packet
-            elif protocol_to_filter[ipv4[1]] == "udp" and ("udp" in filters or len(filters) == 0):
+            elif protocol_to_filter[ipv4[1]] == "udp":
                 udp = protoparse.udp_head(ipv4[4])
                 udp_segment = Packet(proto="udp", packsize=len(udp[2]), sa=ipv4[2], da=ipv4[3], sp=udp[0], dp=udp[1], data=udp[2])
-                if callfile == "sniffler":
-                    udp_segment.display(tab=1)
-                elif callfile == "gsniffler":
-                    packet_buffer.addPacket(udp_segment)
+                if udp_segment.is_in_filter(filters=filters):
+                    if callfile == "sniffler":
+                        udp_segment.display(tab=1)
+                    elif callfile == "gsniffler":
+                        packet_buffer.addPacket(udp_segment)
 
 if __name__ == '__main__':
     import argparse
     
     parser = argparse.ArgumentParser(prog='sniffler', description='Packet sniffer in python', allow_abbrev=False)
-    parser.add_argument('-f', '--filter', nargs='*', action='store', dest='filter', help='Filter to apply to the sniffer', required=False)
+    parser.add_argument('-p', '--proto', nargs='*', action='store', default=[], dest='filter', help='Protocol filter', required=False)
+    parser.add_argument('-sa', '--srcaddr', nargas='1', action='store', default=[], dest='sa', help='Source Address filter', required=False)
+    parser.add_argument('-da', '--dstaddr', nargas='1', action='store', default=[], dest='da', help='Destination Address filter', required=False)
+    parser.add_argument('-sp', '--srcport', nargas='1', action='store', default=[], dest='sp', help='Source Port filter', required=False)
+    parser.add_argument('-dp', '--dstport', nargas='1', action='store', default=[], dest='dp', help='Destination filter', required=False)
     args = vars(parser.parse_args())
     
-    sniffle(args['filter'], callfile="sniffler")
+    filters = {
+        "proto": args["filter"],
+        "sa": args["sa"],
+        "da": args["da"],
+        "sp": args["sp"],
+        "dp": args["dp"]
+    }
+    
+    sniffle(filters, callfile="sniffler")
