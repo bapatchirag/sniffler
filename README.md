@@ -14,7 +14,7 @@ Simple Python-based packet sniffer, complete with a GUI interface for easy viewi
   - [ ] Actions
     - [x] Table population
     - [ ] Population prerequisite/post-population filtering
-    - [ ] Analysis (packet counts, insecure packet counts, maybe more?)
+    - [x] Analysis (packet counts, insecure packet counts, maybe more?)
     - [ ] Error handling
 
 ## Requirements
