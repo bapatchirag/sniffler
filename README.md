@@ -8,14 +8,14 @@ Simple Python-based packet sniffer, complete with a GUI interface for easy viewi
   - [x] Protocol based packet filters for display
 - [ ] Command line integration (TBD)
 - [ ] Add support for more protocols (TBD)
-- [ ] Modularise CLI to allow for GUI integration with same modules
-- [ ] GUI
+- [x] Modularise CLI to allow for GUI integration with same modules
+- [x] GUI
   - [x] UI
-  - [ ] Actions
+  - [x] Actions
     - [x] Table population
     - [x] Pre-population filtering
     - [x] Analysis (packet counts, maybe more?)
-    - [ ] Status handling
+    - [x] Status handling
 
 ## Requirements
 
