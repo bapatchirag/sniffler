@@ -118,10 +118,10 @@ if __name__ == '__main__':
     
     parser = argparse.ArgumentParser(prog='sniffler', description='Packet sniffer in python', allow_abbrev=False)
     parser.add_argument('-p', '--proto', nargs='*', action='store', default=[], dest='filter', help='Protocol filter', required=False)
-    parser.add_argument('-sa', '--srcaddr', nargas='1', action='store', default=[], dest='sa', help='Source Address filter', required=False)
-    parser.add_argument('-da', '--dstaddr', nargas='1', action='store', default=[], dest='da', help='Destination Address filter', required=False)
-    parser.add_argument('-sp', '--srcport', nargas='1', action='store', default=[], dest='sp', help='Source Port filter', required=False)
-    parser.add_argument('-dp', '--dstport', nargas='1', action='store', default=[], dest='dp', help='Destination filter', required=False)
+    parser.add_argument('-sa', '--srcaddr', action='store', default=[], dest='sa', help='Source Address filter', required=False)
+    parser.add_argument('-da', '--dstaddr', action='store', default=[], dest='da', help='Destination Address filter', required=False)
+    parser.add_argument('-sp', '--srcport', action='store', default=[], dest='sp', help='Source Port filter', required=False)
+    parser.add_argument('-dp', '--dstport', action='store', default=[], dest='dp', help='Destination filter', required=False)
     args = vars(parser.parse_args())
     
     filters = {
